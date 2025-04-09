@@ -1,0 +1,102 @@
+#include <iostream>
+#include <vector>
+#include <limits> // Para std::numeric_limits
+
+using namespace std;
+
+// Função para exibir o tabuleiro
+void exibirTabuleiro(const vector<char>& tabuleiro) {
+    cout << " " << tabuleiro[0] << " | " << tabuleiro[1] << " | " << tabuleiro[2] << " " << endl;
+    cout << "-----------" << endl;
+    cout << " " << tabuleiro[3] << " | " << tabuleiro[4] << " | " << tabuleiro[5] << " " << endl;
+    cout << "-----------" << endl;
+    cout << " " << tabuleiro[6] << " | " << tabuleiro[7] << " | " << tabuleiro[8] << " " << endl;
+}
+
+// Função para verificar se houve vitória
+bool verificarVitoria(const vector<char>& tabuleiro, char jogador) {
+    // Verificar linhas
+    for (int i = 0; i < 3; ++i) {
+        if (tabuleiro[i * 3] == jogador && tabuleiro[i * 3 + 1] == jogador && tabuleiro[i * 3 + 2] == jogador) {
+            return true;
+        }
+    }
+
+    // Verificar colunas
+    for (int i = 0; i < 3; ++i) {
+        if (tabuleiro[i] == jogador && tabuleiro[i + 3] == jogador && tabuleiro[i + 6] == jogador) {
+            return true;
+        }
+    }
+
+    // Verificar diagonais
+    if (tabuleiro[0] == jogador && tabuleiro[4] == jogador && tabuleiro[8] == jogador) {
+        return true;
+    }
+    if (tabuleiro[2] == jogador && tabuleiro[4] == jogador && tabuleiro[6] == jogador) {
+        return true;
+    }
+
+    return false;
+}
+
+// Função para verificar se houve empate
+bool verificarEmpate(const vector<char>& tabuleiro) {
+    for (char const& posicao : tabuleiro) {
+        if (isdigit(posicao)) {
+            return false; // Ainda há posições vazias
+        }
+    }
+    return true;
+}
+
+int main() {
+    bool jogarNovamente = true;
+
+    while (jogarNovamente) {
+        vector<char> tabuleiro = {'1', '2', '3', '4', '5', '6', '7', '8', '9'};
+        char jogadorAtual = 'X';
+        int jogadas = 0;
+        bool jogoAcabou = false;
+
+        cout << "Bem-vindo ao Jogo da Velha!" << endl;
+
+        while (!jogoAcabou) {
+            exibirTabuleiro(tabuleiro);
+
+            int escolha;
+            cout << "Jogador " << jogadorAtual << ", escolha uma posição (1-9): ";
+
+            // Validar a entrada do usuário
+            while (!(cin >> escolha) || escolha < 1 || escolha > 9 || !isdigit(tabuleiro[escolha - 1])) {
+                cout << "Posição inválida ou já ocupada! Escolha outra posição: ";
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            }
+
+            tabuleiro[escolha - 1] = jogadorAtual;
+            jogadas++;
+
+            if (verificarVitoria(tabuleiro, jogadorAtual)) {
+                exibirTabuleiro(tabuleiro);
+                cout << "Parabéns! Jogador " << jogadorAtual << " venceu!" << endl;
+                jogoAcabou = true;
+            } else if (verificarEmpate(tabuleiro)) {
+                exibirTabuleiro(tabuleiro);
+                cout << "Empate! Nenhum jogador venceu." << endl;
+                jogoAcabou = true;
+            } else {
+                jogadorAtual = (jogadorAtual == 'X' ? 'O' : 'X');
+            }
+        }
+
+        char resposta;
+        cout << "Deseja jogar novamente? (S/N): ";
+        cin >> resposta;
+        jogarNovamente = (resposta == 'S' || resposta == 's');
+    }
+
+    cout << "Obrigado por jogar!" << endl;
+
+    return 0;
+}
