@@ -21,39 +21,34 @@ bool verificarVitoria(const vector<char>& tabuleiro, char jogador) {
             return true;
         }
     }
-
     // Verificar colunas
     for (int i = 0; i < 3; ++i) {
         if (tabuleiro[i] == jogador && tabuleiro[i + 3] == jogador && tabuleiro[i + 6] == jogador) {
             return true;
         }
     }
-
     // Verificar diagonais
-    if (tabuleiro[0] == jogador && tabuleiro[4] == jogador && tabuleiro[8] == jogador) {
+    if ((tabuleiro[0] == jogador && tabuleiro[4] == jogador && tabuleiro[8] == jogador) ||
+        (tabuleiro[2] == jogador && tabuleiro[4] == jogador && tabuleiro[6] == jogador)) {
         return true;
     }
-    if (tabuleiro[2] == jogador && tabuleiro[4] == jogador && tabuleiro[6] == jogador) {
-        return true;
-    }
-
     return false;
 }
 
 // Função para verificar se houve empate
 bool verificarEmpate(const vector<char>& tabuleiro) {
-    for (char const& posicao : tabuleiro) {
-        if (isdigit(posicao)) {
-            return false; // Ainda há posições vazias
+    for (char posicao : tabuleiro) {
+        if (posicao != 'X' && posicao != 'O') {
+            return false;
         }
     }
     return true;
 }
 
 int main() {
-    bool jogarNovamente = true;
+    char jogarNovamente = 'S';
 
-    while (jogarNovamente) {
+    while (jogarNovamente == 'S' || jogarNovamente == 's') {
         vector<char> tabuleiro = {'1', '2', '3', '4', '5', '6', '7', '8', '9'};
         char jogadorAtual = 'X';
         int jogadas = 0;
@@ -64,22 +59,22 @@ int main() {
         while (!jogoAcabou) {
             exibirTabuleiro(tabuleiro);
 
-            int escolha;
-            cout << "Jogador " << jogadorAtual << ", escolha uma posição (1-9): ";
+            int posicao;
+            cout << "Jogador " << (jogadorAtual == 'X' ? "1 (X)" : "2 (O)") << ", escolha uma posição (1-9): ";
 
-            // Validar a entrada do usuário
-            while (!(cin >> escolha) || escolha < 1 || escolha > 9 || !isdigit(tabuleiro[escolha - 1])) {
+            // Validar entrada do usuário
+            while (!(cin >> posicao) || posicao < 1 || posicao > 9 || tabuleiro[posicao - 1] == 'X' || tabuleiro[posicao - 1] == 'O') {
                 cout << "Posição inválida ou já ocupada! Escolha outra posição: ";
                 cin.clear();
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
             }
 
-            tabuleiro[escolha - 1] = jogadorAtual;
+            tabuleiro[posicao - 1] = jogadorAtual;
             jogadas++;
 
             if (verificarVitoria(tabuleiro, jogadorAtual)) {
                 exibirTabuleiro(tabuleiro);
-                cout << "Parabéns! Jogador " << jogadorAtual << " venceu!" << endl;
+                cout << "Parabéns! Jogador " << (jogadorAtual == 'X' ? "1" : "2") << " venceu!" << endl;
                 jogoAcabou = true;
             } else if (verificarEmpate(tabuleiro)) {
                 exibirTabuleiro(tabuleiro);
@@ -90,10 +85,8 @@ int main() {
             }
         }
 
-        char resposta;
         cout << "Deseja jogar novamente? (S/N): ";
-        cin >> resposta;
-        jogarNovamente = (resposta == 'S' || resposta == 's');
+        cin >> jogarNovamente;
     }
 
     cout << "Obrigado por jogar!" << endl;
